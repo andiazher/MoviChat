@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MoviChat</string>
+    <string name="signInWithGoogle">Ingresa con Google</string>
+</resources>
