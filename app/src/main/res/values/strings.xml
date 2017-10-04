@@ -2,4 +2,6 @@
     <string name="app_name">MoviChat</string>
     <string name="signInWithGoogle">Ingresa con Google</string>
     <string name="logout">Salir</string>
+    <string name="report_bug">Reportar un bug</string>
+    <string name="report">Reportar</string>
 </resources>
