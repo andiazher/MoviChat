@@ -8,6 +8,7 @@ public class Message {
 
     private String user;
     private String text;
+    private String hour;
 
     public String getUser() {
         return user;
@@ -23,5 +24,13 @@ public class Message {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public String getHour() {
+        return hour;
+    }
+
+    public void setHour(String hour) {
+        this.hour = hour;
     }
 }

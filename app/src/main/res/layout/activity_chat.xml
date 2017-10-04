@@ -29,14 +29,14 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="end"
+            android:gravity="bottom"
             android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/lytMessages"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:gravity="end"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
                 android:orientation="vertical">
 
             </LinearLayout>

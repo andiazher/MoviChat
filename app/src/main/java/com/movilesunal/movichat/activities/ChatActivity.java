@@ -1,18 +1,14 @@
 package com.movilesunal.movichat.activities;
 
 import android.content.Intent;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,6 +20,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.movilesunal.movichat.R;
 import com.movilesunal.movichat.model.Message;
 
+import java.sql.Time;
+import java.util.Calendar;
 import java.util.LinkedList;
 
 public class ChatActivity extends AppCompatActivity {
@@ -51,8 +49,13 @@ public class ChatActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference().child("Room").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                Message message = dataSnapshot.getValue(Message.class);
                 if (!sending.contains(dataSnapshot.getKey())) {
-                    addMessageToScreen(dataSnapshot.getValue(Message.class).getText());
+                    if (message.getUser().equals(user.getDisplayName())) {
+                        addMessageToScreen(message, true);
+                    } else {
+                        addMessageToScreen(message, false);
+                    }
                 } else {
                     sending.remove(dataSnapshot.getKey());
                 }
@@ -85,8 +88,14 @@ public class ChatActivity extends AppCompatActivity {
                 if (!edtMessage.getText().toString().isEmpty()) {
                     String text = edtMessage.getText().toString();
                     edtMessage.setText("");
-                    addMessageToScreen(text);
-                    addMessageToFirebase(text);
+                    Calendar calendar = Calendar.getInstance();
+
+                    Message message = new Message();
+                    message.setUser(user.getDisplayName());
+                    message.setText(text);
+                    message.setHour(calendar.get(Calendar.HOUR_OF_DAY) + ":" + calendar.get(Calendar.MINUTE));
+                    addMessageToScreen(message, true);
+                    addMessageToFirebase(message);
                 }
             }
         });
@@ -110,17 +119,24 @@ public class ChatActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void addMessageToScreen(String text) {
-        TextView txtMessage = (TextView) getLayoutInflater().inflate(R.layout.txt_message, lytMessages, false);
-        txtMessage.setText(text);
+    private void addMessageToScreen(Message message, boolean ownMessage) {
+        View view;
+        if (ownMessage) {
+            view = getLayoutInflater().inflate(R.layout.own_message, lytMessages, false);
+        } else {
+            view = getLayoutInflater().inflate(R.layout.other_message, lytMessages, false);
+        }
+        TextView txtUser = (TextView) view.findViewById(R.id.txtUser);
+        TextView txtText = (TextView) view.findViewById(R.id.txtText);
+        TextView txtHour = (TextView) view.findViewById(R.id.txtHour);
+        txtUser.setText(message.getUser());
+        txtText.setText(message.getText());
+        txtHour.setText(message.getHour());
 
-        lytMessages.addView(txtMessage);
+        lytMessages.addView(view);
     }
 
-    private void addMessageToFirebase(String text) {
-        Message message = new Message();
-        message.setUser(user.getDisplayName());
-        message.setText(text);
+    private void addMessageToFirebase(Message message) {
         String key = FirebaseDatabase.getInstance().getReference().child("Room").push().getKey();
         sending.add(key);
         FirebaseDatabase.getInstance().getReference().child("Room").child(key).setValue(message);
