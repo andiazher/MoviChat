@@ -14,9 +14,20 @@ import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
 import com.movilesunal.movichat.R;
+import com.movilesunal.movichat.model.Message;
+
+import java.util.LinkedList;
 
 public class ChatActivity extends AppCompatActivity {
+
+    private LinearLayout lytMessages;
+    private FirebaseUser user;
+    private LinkedList<String> sending = new LinkedList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +35,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        final LinearLayout lytMessages = (LinearLayout) findViewById(R.id.lytMessages);
+        lytMessages = (LinearLayout) findViewById(R.id.lytMessages);
         final EditText edtMessage = (EditText) findViewById(R.id.edtMessage);
 
         setSupportActionBar(toolbar);
@@ -32,21 +43,65 @@ public class ChatActivity extends AppCompatActivity {
             getSupportActionBar().setTitle(R.string.app_name);
         }
 
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+
+        FirebaseDatabase.getInstance().getReference().child("Room").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                if(!sending.contains(dataSnapshot.getKey())) {
+                    addMessageToScreen(dataSnapshot.getValue(Message.class).getText());
+                }else{
+                    sending.remove(dataSnapshot.getKey());
+                }
+            }
+
+            @Override
+            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
 
         findViewById(R.id.fabSend).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!edtMessage.getText().toString().isEmpty()) {
-                    String message = edtMessage.getText().toString();
+                    String text = edtMessage.getText().toString();
                     edtMessage.setText("");
-
-                    TextView txtMessage = (TextView) getLayoutInflater().inflate(R.layout.txt_message, lytMessages, false);
-                    txtMessage.setText(message);
-
-                    lytMessages.addView(txtMessage);
+                    addMessageToScreen(text);
+                    addMessageToFirebase(text);
                 }
             }
         });
+    }
+
+    private void addMessageToScreen(String text) {
+        TextView txtMessage = (TextView) getLayoutInflater().inflate(R.layout.txt_message, lytMessages, false);
+        txtMessage.setText(text);
+
+        lytMessages.addView(txtMessage);
+    }
+
+    private void addMessageToFirebase(String text){
+        Message message = new Message();
+        message.setUser(user.getDisplayName());
+        message.setText(text);
+        String key = FirebaseDatabase.getInstance().getReference().child("Room").push().getKey();
+        sending.add(key);
+        FirebaseDatabase.getInstance().getReference().child("Room").child(key).setValue(message);
     }
 }
