@@ -1,10 +1,13 @@
 package com.movilesunal.movichat.activities;
 
+import android.content.Intent;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
@@ -48,9 +51,9 @@ public class ChatActivity extends AppCompatActivity {
         FirebaseDatabase.getInstance().getReference().child("Room").addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(!sending.contains(dataSnapshot.getKey())) {
+                if (!sending.contains(dataSnapshot.getKey())) {
                     addMessageToScreen(dataSnapshot.getValue(Message.class).getText());
-                }else{
+                } else {
                     sending.remove(dataSnapshot.getKey());
                 }
             }
@@ -89,6 +92,24 @@ public class ChatActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.chat_settings, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_logout:
+                FirebaseAuth.getInstance().signOut();
+                finish();
+                startActivity(new Intent(this, LoginActivity.class));
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     private void addMessageToScreen(String text) {
         TextView txtMessage = (TextView) getLayoutInflater().inflate(R.layout.txt_message, lytMessages, false);
         txtMessage.setText(text);
@@ -96,7 +117,7 @@ public class ChatActivity extends AppCompatActivity {
         lytMessages.addView(txtMessage);
     }
 
-    private void addMessageToFirebase(String text){
+    private void addMessageToFirebase(String text) {
         Message message = new Message();
         message.setUser(user.getDisplayName());
         message.setText(text);

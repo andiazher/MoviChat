@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">MoviChat</string>
     <string name="signInWithGoogle">Ingresa con Google</string>
+    <string name="logout">Salir</string>
 </resources>
