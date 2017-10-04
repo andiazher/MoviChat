@@ -5,10 +5,10 @@ MoviChat es una aplicación de prueba de envío de mensajes con las funcionalida
 ## Tutoriales de implementaciones del API de Firebase
 
 - [Autenticación](https://firebase.google.com/docs/auth/)
-- [Base de datos en tiempo real]()
+- [Base de datos en tiempo real](https://firebase.google.com/docs/database/?hl=es-419)
 - [Almacenamiento]()
 - [Notifiaciones]()
-- [Reportes de bugs]()
+- [Reportes de bugs](https://firebase.google.com/docs/crash/?hl=es-419)
 - [Analytics]()
 - [Hosting]()
 - [AdWords]()
