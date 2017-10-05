@@ -3,9 +3,14 @@ package com.movilesunal.movichat.activities;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -33,7 +38,19 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        findViewById(R.id.btnLoginGoogle).setOnClickListener(new View.OnClickListener() {
+        final Button btnLogin = (Button) findViewById(R.id.btnLoginGoogle);
+        final TextView chkAccept = ((TextView) findViewById(R.id.txtAccept));
+
+        chkAccept.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(LoginActivity.this, ExplorerActivity.class);
+                intent.putExtra("title", getString(R.string.terms));
+                intent.putExtra("url", "https://movichat-5afec.firebaseapp.com/");
+                startActivity(intent);
+            }
+        });
+        btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -47,8 +64,8 @@ public class LoginActivity extends AppCompatActivity {
                                     new GoogleApiClient.OnConnectionFailedListener() {
                                         @Override
                                         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                                        /*Snackbar.make(activity.getWindow().getDecorView().getRootView(),
-                                                R.string.cannot_connect_api_google, Snackbar.LENGTH_LONG).show();*/
+                                            Snackbar.make(getCurrentFocus(),
+                                                    R.string.cannot_connect_api_google, Snackbar.LENGTH_LONG).show();
                                         }
                                     })
                             .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
@@ -64,7 +81,6 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
             finish();
@@ -75,8 +91,8 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK) {
-            if (requestCode == RC_SIGN_IN) {
+        switch (requestCode) {
+            case RC_SIGN_IN:
                 GoogleSignInResult result = Auth.GoogleSignInApi.getSignInResultFromIntent(data);
                 if (result.isSuccess()) {
                     GoogleSignInAccount account = result.getSignInAccount();
@@ -85,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
                     Snackbar.make(getCurrentFocus(), "No te hemos podido autenticar en este momento." +
                             " Danos un momento por fa, y vuelve a intentar.", Snackbar.LENGTH_LONG).show();
                 }
-            }
+                break;
         }
     }
 
@@ -108,8 +124,6 @@ public class LoginActivity extends AppCompatActivity {
                         } else {
                             // If sign in fails, display a message to the user.
                         }
-
-                        // ...
                     }
                 });
     }
