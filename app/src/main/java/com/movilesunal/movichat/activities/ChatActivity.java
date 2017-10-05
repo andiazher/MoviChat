@@ -3,6 +3,7 @@ package com.movilesunal.movichat.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.design.widget.Snackbar;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -32,6 +34,7 @@ import java.util.LinkedList;
 public class ChatActivity extends AppCompatActivity {
 
     private LinearLayout lytMessages;
+    private NestedScrollView sclMessages;
     private FirebaseUser user;
     private LinkedList<String> sending = new LinkedList<>();
 
@@ -41,6 +44,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        sclMessages = (NestedScrollView) findViewById(R.id.sclMessages);
         lytMessages = (LinearLayout) findViewById(R.id.lytMessages);
         final EditText edtMessage = (EditText) findViewById(R.id.edtMessage);
 
@@ -131,7 +135,8 @@ public class ChatActivity extends AppCompatActivity {
                 builder.setPositiveButton(R.string.report, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        FirebaseCrash.report(new Throwable(input.getText().toString()));
+                        FirebaseCrash.report(new Throwable(user.getDisplayName() + " dice: "
+                                + input.getText().toString()));
                         Snackbar.make(getCurrentFocus(), "Tu reporte ha sido enviado", Snackbar.LENGTH_LONG).show();
                     }
                 });
@@ -163,6 +168,12 @@ public class ChatActivity extends AppCompatActivity {
         txtHour.setText(message.getHour());
 
         lytMessages.addView(view);
+        sclMessages.post(new Runnable() {
+            @Override
+            public void run() {
+                sclMessages.fullScroll(ScrollView.FOCUS_DOWN);
+            }
+        });
     }
 
     private void addMessageToFirebase(Message message) {
