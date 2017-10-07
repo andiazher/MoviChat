@@ -127,7 +127,7 @@ public class ChatActivity extends AppCompatActivity {
             case R.id.action_report:
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(R.string.report_bug);
-                builder.setMessage("Describe con detalle el bug.");
+                builder.setMessage(R.string.describe_bug);
                 final EditText input = new EditText(this);
                 input.setInputType(InputType.TYPE_TEXT_FLAG_AUTO_COMPLETE | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
                 builder.setView(input);
@@ -137,7 +137,7 @@ public class ChatActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         FirebaseCrash.report(new Throwable(user.getDisplayName() + " dice: "
                                 + input.getText().toString()));
-                        Snackbar.make(getCurrentFocus(), "Tu reporte ha sido enviado", Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(getCurrentFocus(), R.string.sended_bug, Snackbar.LENGTH_LONG).show();
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

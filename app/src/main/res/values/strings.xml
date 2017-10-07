@@ -7,4 +7,7 @@
     <string name="accept_terms">Al ingresar estás aceptando los <b><u>términos y condiciones</u></b> de MoviChat.</string>
     <string name="cannot_connect_api_google">No hemos podido conectarnos al API de Google en este momento.</string>
     <string name="terms">Términos y condiciones</string>
+    <string name="write_something">Escribe algo...</string>
+    <string name="sended_bug">Tu reporte ha sido enviado</string>
+    <string name="describe_bug">Describe con detalle el bug.</string>
 </resources>
